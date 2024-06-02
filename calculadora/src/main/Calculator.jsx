@@ -66,7 +66,7 @@ export default class Calculator extends Component {
                 return values[0] * values[1];
             default:
                 if(values[1] !== 0) return values[0] / values[1];
-                return "Não é possível dividir por 0";
+                return "Não é possivel dividir por zero";
         }
     }
 
@@ -80,22 +80,32 @@ export default class Calculator extends Component {
         const values = [...this.state.values];
         if(!values.includes(null)) { // Verifica se os dois valores da operacao estao setados, caso sim, realiza a operacao
             const calcValue = this.calc();
-            values[0] = calcValue;
-            values[1] = null;
-            const previusDisplayValue = calcValue + " " + operation;
-            this.setCurrentDisplay(calcValue, true);
-            this.setPreviusDisplay(previusDisplayValue);
-            this.setValues(values);
-        } else { // Se os dois valores ainda nao foram setados, somente a operacao e setada.
-            values[0] = values[0] ? values[0] : +this.state.currentDisplayValue;    
-            this.setValues(values);
-            const previusDisplayValue = values[0] + " " + operation;
-            this.setPreviusDisplay(previusDisplayValue);
-            this.setCurrentDisplay(this.state.currentDisplayValue, true);
-            this.setOpration(operation);        
-            if(this.state.current === 0 && this.state.values.includes(null)) {
-                this.setCurrent(1);
+            if (typeof(calcValue) !== "number") {
+                values[0] = null;
+                values[1] = null;
+                this.setCurrentDisplay(calcValue, true);
+                this.setPreviusDisplay("");
+                this.setValues(values);
+            } else {
+                values[0] = calcValue;
+                values[1] = null;
+                const previusDisplayValue = calcValue + " " + operation;
+                this.setCurrentDisplay(calcValue, true);
+                this.setPreviusDisplay(previusDisplayValue);
+                this.setValues(values);
             }
+        } else { // Se os dois valores ainda nao foram setados, somente a operacao e setada.
+            values[0] = values[0] ? values[0] : +this.state.currentDisplayValue;   
+            if (values[0]) {
+                this.setValues(values);
+                const previusDisplayValue = values[0] + " " + operation;
+                this.setPreviusDisplay(previusDisplayValue);
+                this.setCurrentDisplay(this.state.currentDisplayValue, true);
+                this.setOpration(operation);        
+                if(this.state.current === 0 && this.state.values.includes(null)) {
+                    this.setCurrent(1);
+                }
+            } 
         }
         
     }
@@ -135,14 +145,7 @@ export default class Calculator extends Component {
                 }
                 await this.setValues(values); // Sem o await o values nao estava sendo setado.
             }
-            const calcValue = this.calc();
-            const previusValue = `${values[0]} ${this.state.operation} ${values[1]} =`;
-            const currentValue = calcValue.toString();
-            this.setCurrentDisplay(currentValue, true);
-            this.setPreviusDisplay(previusValue);
-            values[0] = calcValue;
-            values[1] = null;
-            this.setValues(values);
+            this.addOpration(this.state.operation);
         }
     }
 
@@ -155,7 +158,7 @@ export default class Calculator extends Component {
 
     // Funcao para apagar um digito do numero atual.
     erase() {
-        const currentDisplayValue = this.state.currentDisplayValue;
+        const currentDisplayValue = this.state.currentDisplayValue.toString();
         if(currentDisplayValue.length === 1) { // Se for o ultimo numero, o valor do digito atual e setado para zero.
             this.setCurrentDisplay("0", this.state.clearCurrentDisplay);
         } else {
