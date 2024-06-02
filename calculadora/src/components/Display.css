@@ -1,0 +1,17 @@
+.display {
+    grid-column: span 4;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 1.5em;
+    text-wrap: wrap;
+    margin: 0;
+}
+
+.display.top {
+    font-size: 1.2em;
+    height: 20px;
+    margin-top: 20px;
+    padding: 0 22px;
+}

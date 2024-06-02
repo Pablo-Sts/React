@@ -1,0 +1,40 @@
+:root {
+    --bg-button: #8c8c8c85;
+    --border-button: solid 1px #888888;
+}
+
+.button {
+    font-size: 1.4em;
+    background-color: var(--bg-button);
+    border: none;
+    border-right: var(--border-button);
+    border-bottom: var(--border-button);
+    outline: none;
+    border-radius: 5px;
+    margin: 2px;
+    color: #ffffff;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+.button:active {
+    background-color: #8c8c8c91;
+}
+
+.button.operation {
+    background-color: #58585979;
+}
+
+.button.operation:active {
+    background-color: #5858598f;
+}
+
+.button.equal {
+    background-color: #13668ab0;
+}
+
+.button.equal:active {
+    background-color: #13668ac7;
+}
