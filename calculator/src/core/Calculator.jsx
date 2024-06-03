@@ -14,49 +14,30 @@ const initialState = {
     current: 0
 };
 
-export default class Calculator extends Component {
-
-    state = {...initialState};
+class Calculator extends Component {
+    state = {
+        ...initialState
+    }
 
     constructor(props) {
         super(props)
         this.clearMemory = this.clearMemory.bind(this);
-        this.addOpration = this.addOpration.bind(this);
-        this.addDigit = this.addDigit.bind(this);
         this.clearCurrentDisplay = this.clearCurrentDisplay.bind(this);
-        this.equal = this.equal.bind(this);
+        this.addDigit = this.addDigit.bind(this);
+        this.addOpration = this.addOpration.bind(this);
         this.changeSinal = this.changeSinal.bind(this);
         this.erase = this.erase.bind(this);
         this.percent = this.percent.bind(this);
         this.sqr = this.sqr.bind(this);
         this.sqrt = this.sqrt.bind(this);
         this.oneAbout = this.oneAbout.bind(this);
-    }
-
-    setCurrentDisplay(currentDisplayValue, clearCurrentDisplay) {
-        this.setState({clearCurrentDisplay, currentDisplayValue});
-    }
-
-    setPreviusDisplay(previusDisplayValue) {
-        this.setState({previusDisplayValue});
-    }
-
-    setOpration(operation) {
-        this.setState({operation});
-    }
-
-    setValues(values) {
-        this.setState({values});
-    }
-
-    setCurrent(current) {
-        this.setState({current});
+        this.equal = this.equal.bind(this);
     }
 
     // Funcao responsavel por realizar as 4 operacoes basicas.
-    calc() {
+    calc(values) {
         const operation = this.state.operation;
-        const values = [...this.state.values];
+        values = values ? values : [...this.state.values];
         switch (operation) {
             case "+":
                 return values[0] + values[1];
@@ -75,41 +56,11 @@ export default class Calculator extends Component {
         this.setState({...initialState});
     }
 
-    // Funcao responsavel por adicionar uma operador a operacao.
-    addOpration(operation) {
-        const values = [...this.state.values];
-        if(!values.includes(null)) { // Verifica se os dois valores da operacao estao setados, caso sim, realiza a operacao
-            const calcValue = this.calc();
-            if (typeof(calcValue) !== "number") {
-                values[0] = null;
-                values[1] = null;
-                this.setCurrentDisplay(calcValue, true);
-                this.setPreviusDisplay("");
-                this.setValues(values);
-            } else {
-                values[0] = calcValue;
-                values[1] = null;
-                const previusDisplayValue = calcValue + " " + operation;
-                this.setCurrentDisplay(calcValue, true);
-                this.setPreviusDisplay(previusDisplayValue);
-                this.setValues(values);
-            }
-        } else { // Se os dois valores ainda nao foram setados, somente a operacao e setada.
-            values[0] = values[0] ? values[0] : +this.state.currentDisplayValue;   
-            if (values[0]) {
-                this.setValues(values);
-                const previusDisplayValue = values[0] + " " + operation;
-                this.setPreviusDisplay(previusDisplayValue);
-                this.setCurrentDisplay(this.state.currentDisplayValue, true);
-                this.setOpration(operation);        
-                if(this.state.current === 0 && this.state.values.includes(null)) {
-                    this.setCurrent(1);
-                }
-            } 
-        }
-        
+    // Funcao para setar o display atual para zero.
+    clearCurrentDisplay() {
+        this.setState({currentDisplayValue: "0"});
     }
-
+    
     // Funcao resonsavel por adicionar digitos a operacao.
     addDigit(n) {
         let currentValue = this.state.currentDisplayValue;
@@ -124,58 +75,63 @@ export default class Calculator extends Component {
         const i = this.state.current;
         const values = [...this.state.values];
         values[i] = +currentDisplayValue;
-        this.setCurrentDisplay(currentDisplayValue, false);
-        this.setValues(values);
+        this.setState({currentDisplayValue, clearCurrentDisplay: false, values});
     }
 
-    // Funcao para setar o display atual para zero.
-    clearCurrentDisplay() {
-        this.setState({currentDisplayValue: "0"});
-    }
-
-    // Funcao para realizar uma operacao.
-    async equal() {
-        if(this.state.operation !== null) { // Verifica se um operador foi setado para realizar a operacao. 
-            const values = [...this.state.values];
-            if(values.includes(null)) { // Verifica se um dos digitos nao foi setado, e seta ele como o valor do display ou o valor do digito a direita do operador;
-                if(this.state.previusDisplayValue.split(" ").length > 2){
-                    values[1] = +this.state.previusDisplayValue.split(" ")[2];
-                } else {
-                    values[1] = + this.state.currentDisplayValue;
-                }
-                await this.setValues(values); // Sem o await o values nao estava sendo setado.
+    // Funcao responsavel por adicionar uma operador a operacao.
+    addOpration(operation) {
+        const values = [...this.state.values];
+        if(!values.includes(null)) { // Verifica se os dois valores da operacao estao setados, caso sim, realiza a operacao
+            const calcValue = this.calc();
+            if (typeof(calcValue) !== "number") {
+                values[0] = null;
+                values[1] = null;
+                this.setState({currentDisplayValue: calcValue, clearCurrentDisplay: true, previusDisplayValue: "" ,values, operation});
+            } else {
+                values[0] = calcValue;
+                values[1] = null;
+                const previusDisplayValue = calcValue + " " + operation;
+                this.setState({currentDisplayValue: calcValue.toString(), clearCurrentDisplay: true, previusDisplayValue, values, operation});
             }
-            this.addOpration(this.state.operation);
+        } else { // Se os dois valores ainda nao foram setados, somente a operacao e setada.
+            values[0] = values[0] ? values[0] : +this.state.currentDisplayValue;   
+            if (values[0]) {
+                const previusDisplayValue = values[0] + " " + operation;
+                this.setState({clearCurrentDisplay: true, previusDisplayValue, values, operation});    
+                if(this.state.current === 0 && this.state.values.includes(null)) {
+                    this.setState({current: 1});
+                }
+            } 
         }
+        
     }
 
     // Funcao para mudar o valor do digito atual
     changeSinal() {
         const currentDisplayValue = (+this.state.currentDisplayValue * -1).toString();
-        this.setCurrentDisplay(currentDisplayValue, this.state.clearCurrentDisplay);
+        const values = [...this.state.values];
+        values[this.state.current] = +currentDisplayValue;
+        this.setState({currentDisplayValue, values});
 
     }
 
     // Funcao para apagar um digito do numero atual.
     erase() {
-        const currentDisplayValue = this.state.currentDisplayValue.toString();
+        const currentDisplayValue = this.state.currentDisplayValue;
         if(currentDisplayValue.length === 1) { // Se for o ultimo numero, o valor do digito atual e setado para zero.
-            this.setCurrentDisplay("0", this.state.clearCurrentDisplay);
+            this.setState({currentDisplayValue: "0"});
         } else {
             const newValue = currentDisplayValue.substring(0, currentDisplayValue.length-1);
             const values = [...this.state.values];
             values[this.state.current] = newValue;
-            this.setCurrentDisplay(newValue.toString(), this.state.clearCurrentDisplay);
-            this.setValues(values);
+            this.setState({currentDisplayValue: newValue.toString(), values})
         }
-
     }
 
     // Funcao que calcula a porcentagem do numero adicionado, com base no numero atual.
     percent() {
         if(this.state.operation === null) { // Se nao houver nenhum numero adicionado, ambos sao setados para zero.
-            this.setCurrentDisplay("0", this.state.clearCurrentDisplay);
-            this.setPreviusDisplay("0");
+            this.setState({currentDisplayValue: "0", previusDisplayValue: "0"});
         } else {
             const values = [...this.state.values];
             const number = +this.state.currentDisplayValue;
@@ -183,9 +139,7 @@ export default class Calculator extends Component {
             const previusDisplayValue = `${values[0]} ${this.state.operation} ${percentNumber}`;
             const i = this.state.current;
             values[i] = percentNumber;
-            this.setCurrentDisplay(percentNumber.toString(), true);
-            this.setPreviusDisplay(previusDisplayValue);
-            this.setValues(values);
+            this.setState({currentDisplayValue: percentNumber.toString(), clearCurrentDisplay: true, previusDisplayValue, values});
         }
     }
 
@@ -193,16 +147,18 @@ export default class Calculator extends Component {
     sqr() {
         const number = +this.state.currentDisplayValue;
         const sqrNumber = number * number;
-        this.setCurrentDisplay(this.state.currentDisplayValue, true);
-        this.addDigit(sqrNumber);
+        const values = [...this.state.values];
+        values[this.state.current] = sqrNumber;
+        this.setState({currentDisplayValue: sqrNumber.toString(), values});
     }
 
     // Funcao que calcula a raiz quadrada do numero atual.
     sqrt() {
         const number = +this.state.currentDisplayValue;
         const sqrtNumber = Math.sqrt(number);
-        this.setCurrentDisplay(this.state.currentDisplayValue, true);
-        this.addDigit(sqrtNumber);
+        const values = [...this.state.values];
+        values[this.state.current] = sqrtNumber;
+        this.setState({currentDisplayValue: sqrtNumber.toString(), values});
     }
 
     // Funcao que calcula o valor de um dividido pelo numero atual.
@@ -210,8 +166,28 @@ export default class Calculator extends Component {
         const number = +this.state.currentDisplayValue;
         if(number !== 0) {
             const oneAboutNumber = 1 / number;
-            this.setCurrentDisplay(this.state.currentDisplayValue, true);
-            this.addDigit(oneAboutNumber);
+            const values = [...this.state.values];
+            values[this.state.current] = oneAboutNumber;
+            this.setState({currentDisplayValue: oneAboutNumber.toString(), values});
+        }
+    }
+
+    
+    // Funcao para realizar uma operacao.
+    equal() {
+        if(this.state.operation !== null) { // Verifica se um operador foi setado para realizar a operacao. 
+            const values = [...this.state.values];
+            if(values.includes(null)) { // Verifica se um dos digitos nao foi setado, e seta ele como o valor do display ou o valor do digito a direita do operador;
+                if(this.state.previusDisplayValue.split(" ").length > 2){
+                    values[1] = +this.state.previusDisplayValue.split(" ")[2];
+                } else {
+                    values[1] = +this.state.currentDisplayValue;
+                }                
+            }
+
+            const calcValue = this.calc(values);
+            values[0] = calcValue;
+            this.setState({currentDisplayValue: calcValue.toString(), previusDisplayValue: `${calcValue} ${this.state.operation} ${values[1]} =`, values});
         }
     }
 
@@ -248,3 +224,5 @@ export default class Calculator extends Component {
         )
     }
 }
+
+export default Calculator;
