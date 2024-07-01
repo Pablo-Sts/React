@@ -1,0 +1,10 @@
+.home {
+    background-color: #D9C091;
+    color: #fffefe;
+    width: 800px;
+    padding: 30px;
+    margin-top: 40px;
+    margin-right: 200px;
+    border-radius: 10px;
+    align-self: flex-end;
+}

@@ -1,0 +1,50 @@
+:root {
+    --header-height: 100px;
+    --footer-heigth: 80px;
+    --nav-height: 30px;
+    --logo-whidth: 200px;
+
+    --bg-dark: #262223;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    color: #D9D9D9;
+}
+
+.app {
+    display: grid;
+    grid-template-columns: var(--logo-whidth) 1fr;
+    grid-template-rows: 
+        var(--header-height)
+        var(--nav-height)
+        1fr
+        var(--footer-heigth);
+    grid-template-areas: 
+        "logo header"
+        "menu menu"
+        "content content"
+        "footer footer";
+    height: 100vh;
+}
+
+aside.logo {
+    grid-area: logo;
+}
+
+header.header {
+    grid-area: header;
+}
+
+nav.menu {
+    grid-area: menu;
+}
+
+main.content {
+    grid-area: content;
+}
+
+footer.footer {
+    grid-area: footer;
+}

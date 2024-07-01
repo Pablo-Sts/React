@@ -1,0 +1,11 @@
+.header {
+    background-color: var(--bg-dark);
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    grid-template-rows: 1fr;
+    align-items: center;
+}
+
+.header p {
+    font-size: 1.2em;
+}
