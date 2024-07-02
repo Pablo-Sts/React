@@ -15,7 +15,7 @@ function UsersForm(props) {
             <div className="row my-4">
                 <div className="col-12 col-md-6">
                     <label htmlFor="cpf">CPF</label>
-                    <input type="text" className="form-control" name="cpf" placeholder="000.000.000-00" onChange={e => cpfMask(e)}/>
+                    <input type="text" className="form-control" name="cpf" placeholder="000.000.000-00" onChange={e => cpfMask(e)} />
                     <span className="text-danger" hidden>CPF inválido!</span>
                 </div>
                 <div className="col-12 col-md-6">
@@ -50,7 +50,7 @@ function cpfMask(e) {
 function nameMask(e) {
     const name = e.target;
     const lettersRegex = new RegExp(/[xa-zA-Z]/);
-    if(!name.value[name.value.length -1].match(lettersRegex)) {
+    if(!name.value[name.value.length -1].match(lettersRegex) && naname.value[name.value.length -1] !== " ") {
         name.value = name.value.substring(0, name.value.length - 2);
     }
 }
